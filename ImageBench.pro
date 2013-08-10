@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 #-------------------------------------------------
 # For static build (need static Qt librares)
 # Warning: please use qt_ru.qm coincident with the Qt version
-# QMAKE_LFLAGS += -static -static-libgcc
+QMAKE_LFLAGS += -static -static-libgcc
 #-------------------------------------------------
 
 # For Debug

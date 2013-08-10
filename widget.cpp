@@ -31,7 +31,7 @@ void Widget::setWidgetSettings()
 {
     setLayout(mainLayout);
     setWindowTitle(tr("Image Benchmark"));
-    setWindowIcon(QIcon("://icons/imbench.ico"));
+    setWindowIcon(QIcon("://icons/imgbench.png"));
     setContentsMargins(-9, -9, -9, -9);
     setFixedSize(240, 320);
 }
@@ -43,8 +43,8 @@ void Widget::aboutDialog()
                                                        "<p><a href='http://www.gnu.org/licenses/gpl.html'>GNU GENERAL PUBLIC LICENSE</a></p>"
                                                        "<p><a href='https://github.com/EXLMOTODEV/ImageBenchmark'>Source Code on GitHub</a></p>"
                                                        "<p>Program to test the speed of the output of different image formats to Qt Library.</p>"
-                                                       "<p>Supported formats: *.bmp, *.gif, *.ico, *.jpeg, *.jpg, *.mng, *.pbm, *.pgm, *.png, *.ppm, "
-                                                       "*.svg, *.svgz, *.tga, *.tif, *.tiff, *.xbm, *.xpm.</p>"
+                                                       "<p>Supported formats: *.bmp, *.gif, *.jpeg, *.jpg, *.mng, *.pbm, *.pgm, *.png, *.ppm, "
+                                                       "*.svg, *.svgz, *.tif, *.tiff, *.xbm, *.xpm.</p>"
                                                        "<p>Email: <a href='mailto:exl@bk.ru'>exl@bk.ru</a></p>"
                                                        "<p>(c) EXL, <a href='http://forum.motofan.ru'>forum.motofan.ru</a>, 2013</p>").arg(VERSION_APP));
 }
@@ -172,6 +172,11 @@ void Widget::createWidgets()
 #ifdef _DEBUG
         qDebug() << "Fatal Error: image(s) not found!";
 #endif
+        QMessageBox::critical(this,
+                              tr("Image Benchmark"),
+                              tr("Cannot load image files in the \"./images\" folder!\n"
+                                 "Check the existence of the directory \"./images\".\n"
+                                 "Check the existence of the images files there."));
         exit(2);
     }
 

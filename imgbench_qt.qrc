@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/imbench.ico</file>
+        <file>icons/imgbench.png</file>
     </qresource>
 </RCC>
