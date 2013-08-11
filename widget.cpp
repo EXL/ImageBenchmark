@@ -105,7 +105,7 @@ bool Widget::createTableGrid(const QString &path)
  * http://mingw.5.n7.nabble.com/Trouble-with-rdtsc-on-amd64-in-32-bit-environment-tp21369p21372.html
  ***************************************************************************/
 
-unsigned long long Widget::__rdtsc()
+quint64 Widget::__rdtsc()
 {
 #ifdef _WIN64
     unsigned __int64 val1, val2;
@@ -115,14 +115,14 @@ unsigned long long Widget::__rdtsc()
     __asm__ __volatile__ (
                 "rdtsc"
                 : "=a" (val1), "=d" (val2));
-    return ((unsigned __int64)val1) | (((unsigned __int64)val2) << 32);
+    return ((quint64)val1) | (((quint64)val2) << 32);
 }
 
 /**************************************************************************/
 
 QLabel *Widget::createImageLabel(const QString &fileName)
 {
-    __int64 start = __rdtsc();
+    quint64 start = __rdtsc();
 
     QLabel *imageLabel = new QLabel;
     imageLabel->setScaledContents(true);
@@ -140,7 +140,7 @@ QLabel *Widget::createImageLabel(const QString &fileName)
         imageLabel->setPixmap(QPixmap::fromImage(image).scaled(img_size));
     }
 
-    __int64 end = __rdtsc();
+    quint64 end = __rdtsc();
     time = end - start;
 
     return imageLabel;

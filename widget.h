@@ -37,7 +37,7 @@ class Widget : public QWidget
 
     bool createTableGrid(const QString &path);
 
-    unsigned __int64 __rdtsc(void);
+    quint64 __rdtsc(void);
 
     QLabel *createImageLabel(const QString &fileName);
     QLabel *createTypeLabel(const QString &fileType, bool qInit);
