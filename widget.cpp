@@ -8,7 +8,7 @@
 #include <QDebug>
 #endif
 
-#define VERSION_APP 0.01
+#define VERSION_APP 0.1
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -41,11 +41,11 @@ void Widget::aboutDialog()
     QMessageBox::about(this, tr("Image Benchmark"), tr("<p><b>Version %1</b></p>"
                                                        "<p>Application and source code available under license GPL v.3.0:</p>"
                                                        "<p><a href='http://www.gnu.org/licenses/gpl.html'>GNU GENERAL PUBLIC LICENSE</a></p>"
-                                                       "<p><a href='https://github.com/EXLMOTODEV/ImageBenchmark'>Source Code on GitHub</a></p>"
+                                                       "<p><a href='https://github.com/EXL/ImageBenchmark'>Source Code on GitHub</a></p>"
                                                        "<p>Program to test the speed of the output of different image formats to Qt Library.</p>"
                                                        "<p>Supported formats: *.bmp, *.gif, *.jpeg, *.jpg, *.mng, *.pbm, *.pgm, *.png, *.ppm, "
                                                        "*.svg, *.svgz, *.tif, *.tiff, *.xbm, *.xpm.</p>"
-                                                       "<p>Email: <a href='mailto:exl@bk.ru'>exl@bk.ru</a></p>"
+                                                       "<p>Emails: <a href='mailto:exlmotodev@google.com'>exlmotodev@google.com</a>, <a href='mailto:exl@bk.ru'>exl@bk.ru</a></p>"
                                                        "<p>(c) EXL, <a href='http://forum.motofan.ru'>forum.motofan.ru</a>, 2013</p>").arg(VERSION_APP));
 }
 
