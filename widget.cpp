@@ -32,8 +32,7 @@ void Widget::setWidgetSettings()
     setLayout(mainLayout);
     setWindowTitle(tr("Image Benchmark"));
     setWindowIcon(QIcon("://icons/imgbench.png"));
-    setContentsMargins(-9, -9, -9, -9);
-    setFixedSize(240, 320);
+    setFixedSize(sizeHint().width() + 20, sizeHint().height() + 20);
 }
 
 void Widget::aboutDialog()
@@ -124,7 +123,7 @@ QLabel *Widget::createImageLabel(const QString &fileName)
 {
     quint64 start = __rdtsc();
 
-    QLabel *imageLabel = new QLabel;
+    QLabel *imageLabel = new QLabel(this);
     imageLabel->setScaledContents(true);
     imageLabel->setToolTip(fileName);
     if (!fileName.isEmpty()) {
@@ -148,25 +147,25 @@ QLabel *Widget::createImageLabel(const QString &fileName)
 
 QLabel *Widget::createTypeLabel(const QString &fileType, bool qInit)
 {
-    QLabel *typeLabel = new QLabel;
+    QLabel *typeLabel = new QLabel(this);
     qInit ? typeLabel->setText(fileType + " (INIT)") : typeLabel->setText(fileType);
     return typeLabel;
 }
 
 QLabel *Widget::getTimeLabel()
 {
-    QLabel *timeLabel = new QLabel;
+    QLabel *timeLabel = new QLabel(this);
     timeLabel->setText(QString("%1").arg((float)time / 10000) + tr(" Pts"));
     return timeLabel;
 }
 
 void Widget::createWidgets()
 {
-    minorLayout = new QGridLayout;
+    minorLayout = new QGridLayout(this);
 
-    minorLayout->addWidget(new QLabel(tr("Image")), 0, 0, Qt::AlignCenter);
-    minorLayout->addWidget(new QLabel(tr("Type (format)")), 0, 1, Qt::AlignCenter);
-    minorLayout->addWidget(new QLabel(tr("Clocks / 10^4")), 0, 2, Qt::AlignCenter);
+    minorLayout->addWidget(new QLabel(tr("Image"), this), 0, 0, Qt::AlignCenter);
+    minorLayout->addWidget(new QLabel(tr("Type (format)"), this), 0, 1, Qt::AlignCenter);
+    minorLayout->addWidget(new QLabel(tr("Clocks / 10^4"), this), 0, 2, Qt::AlignCenter);
 
     if (!createTableGrid("images")) {
 #ifdef _DEBUG
@@ -180,13 +179,13 @@ void Widget::createWidgets()
         exit(2);
     }
 
-    scrollWidget = new QWidget;
+    scrollWidget = new QWidget(this);
     scrollWidget->setLayout(minorLayout);
 
-    scrollArea = new QScrollArea;
+    scrollArea = new QScrollArea(this);
     scrollArea->setWidget(scrollWidget);
 
-    mainLayout = new QGridLayout;
+    mainLayout = new QGridLayout(this);
     mainLayout->addWidget(scrollArea, 0, 0);
 }
 
@@ -213,7 +212,7 @@ void Widget::createActions()
 
 void Widget::createMenus()
 {
-    fileMenu = new QMenu;
+    fileMenu = new QMenu(this);
     fileMenu->setTitle(tr("&File"));
     fileMenu->addAction(refreshAction);
 
@@ -221,12 +220,12 @@ void Widget::createMenus()
 
     fileMenu->addAction(quitAction);
 
-    helpMenu = new QMenu;
+    helpMenu = new QMenu(this);
     helpMenu->setTitle(tr("&Help"));
     helpMenu->addAction(aboutAction);
     helpMenu->addAction(aboutQtAction);
 
-    menuBar = new QMenuBar;
+    menuBar = new QMenuBar(this);
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(helpMenu);
 
