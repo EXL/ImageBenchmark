@@ -4,6 +4,8 @@
 #include <QMessageBox>
 #include <QApplication>
 
+#include <ctime> // for clock()
+
 #ifdef _DEBUG
 #include <QDebug>
 #endif
@@ -106,6 +108,7 @@ bool Widget::createTableGrid(const QString &path)
 
 quint64 Widget::__rdtsc()
 {
+#ifndef CROSSCOMPILE
 #ifdef _WIN64
     unsigned __int64 val1, val2;
 #else
@@ -115,6 +118,9 @@ quint64 Widget::__rdtsc()
                 "rdtsc"
                 : "=a" (val1), "=d" (val2));
     return ((quint64)val1) | (((quint64)val2) << 32);
+#else
+    return ::clock();
+#endif
 }
 
 /**************************************************************************/
@@ -133,7 +139,7 @@ QLabel *Widget::createImageLabel(const QString &fileName)
             QMessageBox::information(this,
                                      tr("Image Benchmark"),
                                      tr("Cannot load %1.").arg(fileName));
-            exit(1);
+            throw ImagesNotFoundExcp("Widget::createImageLabel()->!fileName.isEmpty(): Cannot Load Image Files!");
         }
 
         imageLabel->setPixmap(QPixmap::fromImage(image).scaled(img_size));
@@ -155,7 +161,11 @@ QLabel *Widget::createTypeLabel(const QString &fileType, bool qInit)
 QLabel *Widget::getTimeLabel()
 {
     QLabel *timeLabel = new QLabel(this);
-    timeLabel->setText(QString("%1").arg((float)time / 10000) + tr(" Pts"));
+#ifndef CROSSCOMPILE
+    timeLabel->setText(QString("%1").arg(time / 10000) + tr(" Pts"));
+#else
+    timeLabel->setText(QString("%1").arg(time / CLOCKS_PER_SEC * 1000) + tr(" ms"));
+#endif
     return timeLabel;
 }
 
@@ -165,7 +175,12 @@ void Widget::createWidgets()
 
     minorLayout->addWidget(new QLabel(tr("Image"), this), 0, 0, Qt::AlignCenter);
     minorLayout->addWidget(new QLabel(tr("Type (format)"), this), 0, 1, Qt::AlignCenter);
+#ifndef CROSSCOMPILE
     minorLayout->addWidget(new QLabel(tr("Clocks / 10^4"), this), 0, 2, Qt::AlignCenter);
+#else
+    minorLayout->addWidget(new QLabel(tr("Milliseconds"), this), 0, 2, Qt::AlignCenter);
+#endif
+
 
     if (!createTableGrid("images")) {
 #ifdef _DEBUG
@@ -176,7 +191,7 @@ void Widget::createWidgets()
                               tr("Cannot load image files in the \"./images\" folder!\n"
                                  "Check the existence of the directory \"./images\".\n"
                                  "Check the existence of the images files there."));
-        exit(2);
+        throw ImagesNotFoundExcp("Widget::createWidgets()->!createTableGrid(\"images\"): Cannot Load Image Files!");
     }
 
     scrollWidget = new QWidget(this);

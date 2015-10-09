@@ -10,6 +10,14 @@
 #include <QAction>
 #include <QMenuBar>
 
+struct ImagesNotFoundExcp {
+    ImagesNotFoundExcp(const QString &a_what) : what(a_what) { }
+    QString getWhat() const { return what; }
+
+private:
+    const QString what;
+};
+
 class Widget : public QWidget
 {
     Q_OBJECT
@@ -17,7 +25,7 @@ class Widget : public QWidget
     QSize img_size;
 
     uint image_c;
-    uint time;
+    double time;
 
     QGridLayout *mainLayout;
     QGridLayout *minorLayout;
