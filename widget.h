@@ -3,14 +3,30 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QGridLayout>
-#include <QScrollArea>
+#include <QVBoxLayout>
 #include <QSize>
 #include <QMenu>
 #include <QAction>
 #include <QMenuBar>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
-struct ImagesNotFoundExcp {
+#ifdef _DEBUG
+#include <QDebug>
+#endif
+
+struct FloatTableWidgetItem : public QTableWidgetItem
+{
+    explicit FloatTableWidgetItem(const QString &text) : QTableWidgetItem(text) { }
+
+    bool operator <(const QTableWidgetItem &other) const
+    {
+        return text().toFloat() < other.text().toFloat();
+    }
+};
+
+struct ImagesNotFoundExcp
+{
     ImagesNotFoundExcp(const QString &a_what) : what(a_what) { }
     QString getWhat() const { return what; }
 
@@ -27,10 +43,8 @@ class Widget : public QWidget
     uint image_c;
     double time;
 
-    QGridLayout *mainLayout;
-    QGridLayout *minorLayout;
-
-    QWidget *scrollWidget;
+    QVBoxLayout *mainLayout;
+    QTableWidget *tableWidget;
 
     QMenuBar *menuBar;
     QMenu *fileMenu;
@@ -41,15 +55,13 @@ class Widget : public QWidget
     QAction *aboutAction;
     QAction *aboutQtAction;
 
-    QScrollArea *scrollArea;
-
     bool createTableGrid(const QString &path);
 
     quint64 __rdtsc(void);
 
     QLabel *createImageLabel(const QString &fileName);
-    QLabel *createTypeLabel(const QString &fileType, bool qInit);
-    QLabel *getTimeLabel();
+    QTableWidgetItem *createTypeLabel(const QString &fileType, bool qInit);
+    FloatTableWidgetItem *getTimeLabel();
 
     void createWidgets();
     void createActions();

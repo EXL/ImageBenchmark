@@ -10,7 +10,7 @@
 #include <QDebug>
 #endif
 
-#define VERSION_APP 0.1
+#define VERSION_APP 0.2
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -34,7 +34,7 @@ void Widget::setWidgetSettings()
     setLayout(mainLayout);
     setWindowTitle(tr("Image Benchmark"));
     setWindowIcon(QIcon("://icons/imgbench.png"));
-    setFixedSize(sizeHint().width() + 20, sizeHint().height() + 20);
+    setFixedSize(sizeHint().width() * 1.2, sizeHint().height() * 2);
 }
 
 void Widget::aboutDialog()
@@ -52,9 +52,7 @@ void Widget::aboutDialog()
 
 void Widget::refreshSlot()
 {
-    delete minorLayout;
-    delete scrollWidget;
-    delete scrollArea;
+    delete tableWidget;
     delete mainLayout;
 
     createWidgets();
@@ -69,6 +67,8 @@ bool Widget::createTableGrid(const QString &path)
 
     QStringList::Iterator it;
     int i;
+    int vecSize;
+    const int columnConst = 2;
 
     QStringList nameFilter;
     nameFilter << "*.png"
@@ -92,11 +92,41 @@ bool Widget::createTableGrid(const QString &path)
     QStringList files = dir.entryList(nameFilter,
                                       QDir::Files);
 
-    for(it = files.begin(), i = 1; it != files.end(); ++i, ++it, ++image_c){
-        minorLayout->addWidget(createImageLabel(QFileInfo(path, *it).absoluteFilePath()), i, 0, Qt::AlignCenter);
-        minorLayout->addWidget(createTypeLabel(QString(QFileInfo(path, *it).completeSuffix().toUpper()), i == 1), i, 1, Qt::AlignCenter);
-        minorLayout->addWidget(getTimeLabel(), i, 2, Qt::AlignCenter);
+    QVector<QVector<QTableWidgetItem *> > vecWidgetPointers2D;
+    QVector<QWidget *> vecWidget;
+    for (it = files.begin(), i = 0; it != files.end(); ++i, ++it, ++image_c) {
+        vecWidget.push_back(createImageLabel(QFileInfo(path, *it).absoluteFilePath()));
+        QVector<QTableWidgetItem *> tmpVec;
+        tmpVec.push_back(createTypeLabel(QString(QFileInfo(path, *it).completeSuffix().toUpper()), i == 0));
+        tmpVec.push_back(getTimeLabel());
+
+        vecWidgetPointers2D.push_back(tmpVec);
     }
+
+    vecSize = vecWidget.size();
+
+    tableWidget->setRowCount(vecSize);
+    tableWidget->setColumnCount(columnConst + 1);
+    tableWidget->setColumnWidth(0, img_size.width());
+
+    for (int i = 0; i < vecSize; ++i) {
+        tableWidget->setRowHeight(i, img_size.height());
+        tableWidget->setCellWidget(i, 0, vecWidget[i]);
+        for (int j = 0; j < columnConst; ++j) {
+            tableWidget->setItem(i, j + 1, vecWidgetPointers2D[i][j]);
+        }
+    }
+
+    QStringList tableLabels;
+    tableLabels << tr("Image") << tr("Type (format)");
+#ifndef CROSSCOMPILE
+    tableLabels << tr("Clocks / 10^4");
+#else
+    tableLabels << tr("Milliseconds");
+#endif
+
+    tableWidget->setHorizontalHeaderLabels(tableLabels);
+    tableWidget->setSortingEnabled(true);
 
     return (image_c > 0) ? true : false;
 }
@@ -148,39 +178,34 @@ QLabel *Widget::createImageLabel(const QString &fileName)
     quint64 end = __rdtsc();
     time = end - start;
 
+    imageLabel->setStyleSheet("QLabel { background: #CEEACE; }");
+
     return imageLabel;
 }
 
-QLabel *Widget::createTypeLabel(const QString &fileType, bool qInit)
+QTableWidgetItem *Widget::createTypeLabel(const QString &fileType, bool qInit)
 {
-    QLabel *typeLabel = new QLabel(this);
-    qInit ? typeLabel->setText(fileType + " (INIT)") : typeLabel->setText(fileType);
+    QTableWidgetItem *typeLabel = new QTableWidgetItem(qInit ? fileType + " (INIT)" : fileType);
+    typeLabel->setTextAlignment(Qt::AlignCenter);
+    typeLabel->setBackgroundColor(QColor("#CEEACE"));
     return typeLabel;
 }
 
-QLabel *Widget::getTimeLabel()
+FloatTableWidgetItem *Widget::getTimeLabel()
 {
-    QLabel *timeLabel = new QLabel(this);
 #ifndef CROSSCOMPILE
-    timeLabel->setText(QString("%1").arg(time / 10000) + tr(" Pts"));
+    FloatTableWidgetItem *timeLabel = new FloatTableWidgetItem(QString::number(time / 10000, 'f', 3));
 #else
-    timeLabel->setText(QString("%1").arg(time / CLOCKS_PER_SEC * 1000) + tr(" ms"));
+    FloatTableWidgetItem *timeLabel = new FloatTableWidgetItem(QString::number(time / CLOCKS_PER_SEC * 1000, 'f', 3));
 #endif
+    timeLabel->setTextAlignment(Qt::AlignCenter);
+    timeLabel->setBackgroundColor(QColor("#CEEACE"));
     return timeLabel;
 }
 
 void Widget::createWidgets()
 {
-    minorLayout = new QGridLayout(this);
-
-    minorLayout->addWidget(new QLabel(tr("Image"), this), 0, 0, Qt::AlignCenter);
-    minorLayout->addWidget(new QLabel(tr("Type (format)"), this), 0, 1, Qt::AlignCenter);
-#ifndef CROSSCOMPILE
-    minorLayout->addWidget(new QLabel(tr("Clocks / 10^4"), this), 0, 2, Qt::AlignCenter);
-#else
-    minorLayout->addWidget(new QLabel(tr("Milliseconds"), this), 0, 2, Qt::AlignCenter);
-#endif
-
+    tableWidget = new QTableWidget(this);
 
     if (!createTableGrid("images")) {
 #ifdef _DEBUG
@@ -194,14 +219,8 @@ void Widget::createWidgets()
         throw ImagesNotFoundExcp("Widget::createWidgets()->!createTableGrid(\"images\"): Cannot Load Image Files!");
     }
 
-    scrollWidget = new QWidget(this);
-    scrollWidget->setLayout(minorLayout);
-
-    scrollArea = new QScrollArea(this);
-    scrollArea->setWidget(scrollWidget);
-
-    mainLayout = new QGridLayout(this);
-    mainLayout->addWidget(scrollArea, 0, 0);
+    mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(tableWidget);
 }
 
 void Widget::createActions()
