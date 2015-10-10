@@ -14,9 +14,22 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 # win32-g++:QMAKE_LFLAGS += -static -static-libgcc
 #-------------------------------------------------
 
+DEFINES += CROSSPLATFORM
+
 # Deploy ./images/ catalog in build directory
 # http://dragly.org/2013/11/05/copying-data-files-to-the-build-directory-when-working-with-qmake/
-deploy.commands = $(COPY_DIR) $$PWD/images $$OUT_PWD
+D_IN = $$PWD/images
+D_OUT = $$OUT_PWD
+
+win32: {
+    D_OUT = $$D_OUT/images
+    D_IN ~= s,/,\\,g
+    D_OUT ~= s,/,\\,g
+
+    DEFINES -= CROSSPLATFORM
+}
+
+deploy.commands = $(COPY_DIR) $$D_IN $$D_OUT
 first.depends = $(first) deploy
 export(first.depends)
 export(deploy.commands)
@@ -25,10 +38,8 @@ QMAKE_EXTRA_TARGETS += first deploy
 # For Debug
 QMAKE_CXXFLAGS_DEBUG += -D_DEBUG
 
-DEFINES += CROSSCOMPILE
-
 # For icon
-win32-g++:RC_FILE = imgbench_win.rc
+win32:RC_FILE = imgbench_win.rc
 
 TARGET = ImageBench
 TEMPLATE = app

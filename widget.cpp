@@ -119,7 +119,7 @@ bool Widget::createTableGrid(const QString &path)
 
     QStringList tableLabels;
     tableLabels << tr("Image") << tr("Type (format)");
-#ifndef CROSSCOMPILE
+#ifndef CROSSPLATFORM
     tableLabels << tr("Clocks / 10^4");
 #else
     tableLabels << tr("Milliseconds");
@@ -138,7 +138,7 @@ bool Widget::createTableGrid(const QString &path)
 
 quint64 Widget::__rdtsc()
 {
-#ifndef CROSSCOMPILE
+#ifndef CROSSPLATFORM
 #ifdef _WIN64
     unsigned __int64 val1, val2;
 #else
@@ -193,7 +193,7 @@ QTableWidgetItem *Widget::createTypeLabel(const QString &fileType, bool qInit)
 
 FloatTableWidgetItem *Widget::getTimeLabel()
 {
-#ifndef CROSSCOMPILE
+#ifndef CROSSPLATFORM
     FloatTableWidgetItem *timeLabel = new FloatTableWidgetItem(QString::number(time / 10000, 'f', 3));
 #else
     FloatTableWidgetItem *timeLabel = new FloatTableWidgetItem(QString::number(time / CLOCKS_PER_SEC * 1000, 'f', 3));
