@@ -46,7 +46,7 @@ void Widget::aboutDialog()
                                                        "<p>Program to test the speed of the output of different image formats to Qt Library.</p>"
                                                        "<p>Supported formats: *.bmp, *.gif, *.jpeg, *.jpg, *.mng, *.pbm, *.pgm, *.png, *.ppm, "
                                                        "*.svg, *.svgz, *.tif, *.tiff, *.xbm, *.xpm.</p>"
-                                                       "<p>Emails: <a href='mailto:exlmotodev@google.com'>exlmotodev@google.com</a>, <a href='mailto:exl@bk.ru'>exl@bk.ru</a></p>"
+                                                       "<p>Emails: <a href='mailto:exlmotodev@gmail.com'>exlmotodev@gmail.com</a>, <a href='mailto:exl@bk.ru'>exl@bk.ru</a></p>"
                                                        "<p>(c) EXL, <a href='http://forum.motofan.ru'>forum.motofan.ru</a>, 2013</p>").arg(VERSION_APP));
 }
 
